@@ -50,6 +50,24 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
                         print(self.names)
                     self.tableviewOutlet.reloadData()
                     })
+        // Step 8, READING NEW DATA FROM STUDENTS
+        
+        // looks for data changes
+        ref.child("Students2").observe(.childAdded, with: { (snapshot) in
+            // keys are the "-NqY-fXQANmvGjwoY9Qw" numbers, then the values are dictionaries
+                    let dict = snapshot.value as! [String:Any]
+                    let s = Student(dict: dict)
+                    self.studentArray.append(s)
+                    self.names.append(s.name)
+            
+                    self.tableviewOutlet.reloadData()
+               })
+        
+        ref.child("Students2").observeSingleEvent(of: .value, with: { snapshot in
+                print("--inital load has completed and the last user was read--")
+                print(self.studentArray.count)
+            })
+        
     }
 
 
@@ -63,7 +81,9 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         let tempAge = Int(agefieldOutlet.text ?? "0")!
         let s1 = Student(name: tempName, age: tempAge)
         studentArray.append(s1)
+        names.append(s1.name)
         s1.saveToFirebase()
+        tableviewOutlet.reloadData()
     }
     
     

@@ -23,6 +23,22 @@ class Student{
         self.age = age
     }
     
+    // this method lets new data from firebase be converted into a student.
+    init(dict: [String:Any]){
+        // Safely unwrapping values from dictionary
+        if let a = dict["age:"] as? Int{
+            age = a
+        }
+        else{
+            age = 0
+        }
+        if let n = dict["name:"] as? String{
+            name = n
+        } else {
+            name = ""
+        }
+    }
+    
     func saveToFirebase() {
         // in func makes a dictionary
         let dict = ["name:":name,"age:":age] as [String:Any]
