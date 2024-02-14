@@ -57,6 +57,8 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             // keys are the "-NqY-fXQANmvGjwoY9Qw" numbers, then the values are dictionaries
                     let dict = snapshot.value as! [String:Any]
                     let s = Student(dict: dict)
+                    //assigns each new read student's key variable to its firebase key.
+                    s.firebaseKey = snapshot.key
                     self.studentArray.append(s)
                     self.names.append(s.name)
             
@@ -90,12 +92,21 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return names.count
     }
-    
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "myCell")!
         cell.textLabel?.text = "\(names[indexPath.row])"
         return cell
     }
+    func tableView(_ tableView: UITableView, editingStyleForRowAt indexPath: IndexPath) -> UITableViewCell.EditingStyle {
+        return .delete
+    }
+    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+        if editingStyle == .delete {
+            
+        }
+    }
+    
+    
     
 }
 

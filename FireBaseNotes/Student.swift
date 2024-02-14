@@ -13,6 +13,7 @@ class Student{
     
     var name: String
     var age: Int
+    var firebaseKey = ""
     
     //refrence to firebase
     var ref = Database.database().reference()
@@ -21,6 +22,9 @@ class Student{
     init(name: String, age: Int) {
         self.name = name
         self.age = age
+        // sets the key var to the key of the firebase obj
+        firebaseKey = ref.child("Students2").childByAutoId().key ?? "0"
+
     }
     
     // this method lets new data from firebase be converted into a student.
@@ -44,5 +48,11 @@ class Student{
         let dict = ["name:":name,"age:":age] as [String:Any]
         // saves the dictionary to the child, Students2
         ref.child("Students2").childByAutoId().setValue(dict)
+        
     }
+    
+    func deleteFromFirebase(){
+            ref.child("Students2").child(firebaseKey).removeValue()
+        }
+
 }
