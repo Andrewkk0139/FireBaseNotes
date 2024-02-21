@@ -32,7 +32,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         tableviewOutlet.dataSource = self
         ref = Database.database().reference()
         
-        // step 5
+        // step 5, SINGLE OBJECTS
         //observe looks for data changes in a specified child location.
         ref.child("Students").observe(.childAdded, with: { (snapshot) in
                   // snapshot is a dictionary with a key and a value
@@ -47,7 +47,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         //called after .childAdded is done
                 ref.child("Students").observeSingleEvent(of: .value, with: { snapshot in
                         print("--inital load has completed and the last user was read--")
-                        print(self.names)
+                      //  print(self.studentArray)
                     self.tableviewOutlet.reloadData()
                     })
         // Step 8, READING NEW DATA FROM STUDENTS
@@ -65,10 +65,21 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
                     self.tableviewOutlet.reloadData()
                })
         
+        // called after .childAdded
         ref.child("Students2").observeSingleEvent(of: .value, with: { snapshot in
                 print("--inital load has completed and the last user was read--")
                 print(self.studentArray.count)
             })
+        ref.child("Students2").observe(.childRemoved) { (snapshot) in
+            for i in 0..<self.studentArray.count {
+                if snapshot.key == self.studentArray[i].firebaseKey {
+                    self.studentArray.remove(at: i)
+                    self.tableviewOutlet.reloadData()
+                    break
+                }
+            }
+            
+        }
         
     }
 
@@ -82,19 +93,15 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         let tempName = textfieldOutlet.text!
         let tempAge = Int(agefieldOutlet.text ?? "0")!
         let s1 = Student(name: tempName, age: tempAge)
-        studentArray.append(s1)
-        names.append(s1.name)
         s1.saveToFirebase()
-        tableviewOutlet.reloadData()
     }
     
-    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return names.count
+        return studentArray.count
     }
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "myCell")!
-        cell.textLabel?.text = "\(names[indexPath.row])"
+        cell.textLabel?.text = "\(studentArray[indexPath.row].name)"
         return cell
     }
     func tableView(_ tableView: UITableView, editingStyleForRowAt indexPath: IndexPath) -> UITableViewCell.EditingStyle {
@@ -102,7 +109,10 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     }
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
-            
+        //    print("This is studentArray WOOO: \(self.studentArray[indexPath.row].name)")
+            studentArray[indexPath.row].deleteFromFirebase()
+            studentArray.remove(at: indexPath.row)
+            tableView.reloadData()
         }
     }
     

@@ -48,7 +48,6 @@ class Student{
         let dict = ["name:":name,"age:":age] as [String:Any]
         // saves the dictionary to the child, Students2
         ref.child("Students2").childByAutoId().setValue(dict)
-        
     }
     
     func deleteFromFirebase(){
